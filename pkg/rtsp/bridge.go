@@ -272,6 +272,10 @@ func (wb *WebRTCBridge) setupPeerConnection(webRTCConfig *tuya.WebRTCConfig) err
 
 				switch packet.SSRC {
 				case wb.rtpForwarder.videoSSRC:
+					// The camera picks its own payload type (e.g. 95) on the
+					// DataChannel; the RTSP SDP declares 96, and clients drop
+					// packets whose type doesn't match.
+					packet.PayloadType = 96
 					wb.rtpForwarder.ForwardVideoPacket(packet)
 				case wb.rtpForwarder.audioSSRC:
 					wb.rtpForwarder.ForwardAudioPacket(packet)
